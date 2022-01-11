@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.sb.dto.BoardDTO;
 import org.zerock.sb.dto.PageRequestDTO;
@@ -44,12 +42,32 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    @GetMapping("/read")
-    public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping({"/read", "/modify"})
+    public void read(@RequestParam Long bno, PageRequestDTO pageRequestDTO, Model model) {
 
         model.addAttribute("dto", boardService.read(bno));
 
     }
+
+    @PostMapping("/modify")
+    public String modifyPost(BoardDTO boardDTO, RedirectAttributes redirectAttributes){
+
+        boardService.modify(boardDTO);
+
+        return "redirect:/board/read?bno="+boardDTO.getBno();
+    }
+
+    @PostMapping("/remove/{bno}")
+    public String remove(@PathVariable("bno") Long bno, RedirectAttributes redirectAttributes){
+
+        boardService.remove(bno);
+
+        redirectAttributes.addFlashAttribute("msg", bno);
+
+        return "redirect:/board/list";
+    }
+
 }
 
 

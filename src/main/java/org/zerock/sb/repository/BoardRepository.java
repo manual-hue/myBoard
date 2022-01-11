@@ -12,5 +12,4 @@ public interface BoardRepository extends JpaRepository<Board,Long>, BoardSearch 
     @Query("select b.bno, b.title, b.writer, b.regDate , count(r) from Board b left join Reply r on r.board = b group by b ")
     Page<Object[]> ex1(Pageable pageable);
 
-
 }

@@ -4,7 +4,12 @@
       layout:decorator="layout/layout2">
 
 <div class="card" layout:fragment="content">
-
+    <style>
+        .my-4 {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
     <div class="card">
         <div class="card-header">
             Board Read
@@ -34,22 +39,24 @@
             </div>
 
             <div class="input-group mb-3">
-                <span class="input-group-text">ModDate</span>
+                <span class="input-group-text">Last Modification</span>
                 <input type="text" name="modDate" class="form-control" readonly
                        th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}">
             </div>
 
             <div class="input-group">
                 <span class="input-group-text">Content</span>
-                <div class="form-control" aria-label="With textarea" name="content" rows="4">
+                <div class="form-control" aria-label="With textarea" name="content" rows="4" disabled>
                     <div th:utext="(${dto.content})"></div>
                 </div>
             </div>
-
             <div class="my-4">
                 <div class="my-4">
-                    <div class="float-end">
+                    <div>
                         <button type="button" class="btn btn-primary" th:onclick="|modify(${dto.bno})|">Modify</button>
+                        <button type="button" class="btn btn-warning" th:onclick="|remove()|">Delete</button>
+                    </div>
+                    <div>
                         <button type="button" class="btn btn-secondary" th:onclick="|moveList()|">List</button>
                     </div>
                 </div>
@@ -108,7 +115,7 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        function modify(bno) {
+        function modify(bno) { // 글 수정
 
             const page = [[${pageRequestDTO.page}]]
             const size = [[${pageRequestDTO.size}]]
@@ -122,6 +129,20 @@
             }
 
             self.location = `/board/modify?bno=${bno}&page=${page}&size=${size}` + searchQuery
+        }
+
+        function remove(){
+            async function sendRemoveData() {
+
+                const response = await axios.post(`/board/remove/${bno}`)
+                self.location=`/board/list`
+
+                alert('글이 삭제되었습니다!');
+
+                const PageResponse = await response.data
+
+            }
+            sendRemoveData()
         }
 
         function moveList() {
@@ -261,7 +282,7 @@
 
             ele.closest("div").remove()
 
-            //targetLi의 안쪽 elemement 삭제
+            //targetLi의 안쪽 element 삭제
             targetLi.appendChild(cloneReply)
 
         }
