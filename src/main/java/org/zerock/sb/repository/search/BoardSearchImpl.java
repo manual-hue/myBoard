@@ -22,12 +22,9 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         super(Board.class);
     }
 
-
-
     @Override
     public Page<Board> search1(char[] typeArr, String keyword, Pageable pageable) {
         log.info("------------search1");
-
 
         QBoard board = QBoard.board;
 

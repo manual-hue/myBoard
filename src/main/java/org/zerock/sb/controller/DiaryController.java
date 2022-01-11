@@ -40,7 +40,7 @@ public class DiaryController {
 
     }
 
-    @GetMapping("/read")
+    @GetMapping({"/read", "/modify"})
     public void read(Long dno, PageRequestDTO pageRequestDTO, Model model) {
 
         model.addAttribute("dto", diaryService.read(dno));

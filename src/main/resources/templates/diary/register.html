@@ -4,7 +4,7 @@
 
 <div class="card" layout:fragment="content">
     <div class="card-header">
-        Board Register
+        Diary Register
     </div>
 
     <div class="card-body">
@@ -19,9 +19,9 @@
                 <input type="text" name="writer" class="form-control" placeholder="Writer">
             </div>
 
-            <div class="input-group">
+            <div class="input-group mb-3">
                 <span class="input-group-text">Content</span>
-                <input type="textarea" id="summernote" rows="4">
+                <input type="text" name="content" class="form-control" placeholder="다이어리를 완성해보세요." rows="8">
             </div>
 
             <div class="input-group">
@@ -93,26 +93,25 @@
 
                         </ul>
                     </div>
-
-
                 </div>
                 <!--  end panel-body -->
-
             </div>
             <!--  end panel-body -->
         </div>
         <!-- end panel -->
     </div>
     <!-- /.row -->
-
 </div>
 
 <th:block layout:fragment="script">
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
     <script th:inline="javascript">
 
         const inputFile = document.querySelector("input[name='uploadFile']")
-
 
         document.querySelector("button[type='submit']").addEventListener("click", function (e) {
 
@@ -120,6 +119,13 @@
             e.stopPropagation()
 
             const liTags = document.querySelectorAll(".uploadResult ul li")
+
+            if(liTags.length == 0){
+                swal("Oops!", "한 장 이상의 사진을 등록해주세요!", "warning");
+                // alert('사진을 한 장 이상 등록해주세요!');
+                liTags.focus();
+                return;
+            }
 
             let str = ""
 

@@ -11,9 +11,9 @@ import org.zerock.sb.entity.QDiaryPicture;
 import org.zerock.sb.entity.QFavorite;
 
 @Log4j2
-public class DiarySearchImpl extends QuerydslRepositorySupport implements DiarySearch{
+public class DiarySearchImpl extends QuerydslRepositorySupport implements DiarySearch {
 
-    public DiarySearchImpl(){
+    public DiarySearchImpl() {
         super(Diary.class);
     }
 
@@ -26,7 +26,6 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
         QFavorite qFavorite = QFavorite.favorite;
         QDiaryPicture qDiaryPicture = new QDiaryPicture("pic");
 
-
         JPQLQuery<Diary> query = from(qDiary);
         query.leftJoin(qDiary.tags);
         query.leftJoin(qDiary.pictures, qDiaryPicture);
@@ -34,15 +33,13 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
 
         query.groupBy(qDiary);
 
-        query.select(qDiary.dno, qDiary.title, qDiaryPicture,  qDiary.tags.any() , qFavorite.score.sum() );
+        query.select(qDiary.dno, qDiary.title, qDiaryPicture, qDiary.tags.any(), qFavorite.score.sum());
 
         getQuerydsl().applyPagination(pageable, query);
 
         log.info("query:" + query);
 
         query.fetch();
-
-
 
 
         return null;

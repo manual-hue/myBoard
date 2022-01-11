@@ -3,34 +3,33 @@
       layout:decorator="layout/layout2">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Diary Main</title>
 </head>
 <body>
-
-
 <div layout:fragment="content">
     <style>
-
-
-        .btn-dark { float: right !important; }
+        .btn-dark {
+            float: right !important;
+        }
 
         .tagDiv {
             list-style: none;
-            display: flex;
+            display: inline-table;
             flex-direction: row;
         }
 
         .tagDiv li {
             margin: 0.3em;
-            background-color: #dde0e3;
+            background-color: #000000;
             border-radius: 0.2em;
+            float: left;
         }
 
         .table > tbody {
             vertical-align: middle;
         }
 
-        .list{
+        .list {
             margin: 0px 5px;
             padding: 0px 10px;
             border: 1px solid #f5e4c9;
@@ -47,8 +46,12 @@
             max-height: 500px;
             min-width: 300px;
             min-height: 500px;
-            /*margin: auto;*/
+            margin: 20px 10px 20px 10px;
             text-align: center;
+        }
+
+        .card-footer {
+            background-color: transparent;
         }
 
         .title {
@@ -68,20 +71,49 @@
             font-size: 18px;
         }
 
+        .diary-header {
+            height: 58px;
+        }
+
+        .diary-list {
+            min-height: -webkit-fill-available;
+        }
+
+        .diary-list .card-header {
+            height: 117px;
+            width: 298px;
+            overflow: hidden;
+        }
+
         button:hover, a:hover {
             opacity: 0.7;
         }
 
-        .board-list{
+        .board-list {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .board-list img{
+
+        .board-list img {
+            /*width: 200px;*/
+            height: 100px;
+
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            -ms-flex-align: center;
+            align-items: center; /* 수직 정렬 */
+
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center; /* 수평 정렬 */
         }
 
     </style>
 
-    <div class="card-body">
+    <div class="card-header diary-header">
         <div class="float-end">
             <button id="searchBtn" class="btn" onclick="search()"><i class="fas fa-search"></i></button>
             <select id="searchType">
@@ -94,20 +126,23 @@
             </select>
             <input type="text" id="keyword" th:value="${pageRequestDTO.keyword}">
         </div>
-        <button class="btn btn-dark"><a href="/diary/register" style="color: white"><i class="far fa-edit"></i></a></button>
+        <button class="btn btn-dark"><a href="/diary/register" style="color: white"><i class="far fa-edit"></i></a>
+        </button>
     </div>
 
 
-      <div class="board-list" >
-        <div th:each="board:${res.dtoList}">
-            <div class="card">
+    <div class="board-list">
+        <div th:each="board:${res.dtoList}" class="card diary-list">
+            <div class="card-header">
                 <img th:each="picture:${board.pictures[0]}" th:src="@{/display(fileName=${picture.getLink()})}">
+            </div>
+            <div class="card-body">
                 <h1></h1>
                 <p>Dno. [[${board.dno}]]</p>
                 <a th:href="|javascript:movePage(${res.page}, ${board.dno})|">[[${board.title}]]</a>
                 <p>[[${board.writer}]]</p>
                 <p>[[${#temporals.format(board.regDate, 'yyyy/MM/dd')}]]</p>
-                <ul class="tagDiv">
+                <ul class="tagDiv card-footer">
                     <li class="list" th:each="tag:${board.tags}">[[|#${tag}]]</li>
                 </ul>
             </div>
@@ -116,29 +151,28 @@
 </div>
 
 
+<div class="d-flex justify-content-center">
+    <ul class="pagination">
+        <li th:if="${res.prev}" class="page-item">
+            <a class="page-link" th:href="|javascript:movePage(${res.start-1})|" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+        </li>
 
-    <div class="d-flex justify-content-center">
-        <ul class="pagination">
-            <li th:if="${res.prev}" class="page-item">
-                <a class="page-link" th:href="|javascript:movePage(${res.start-1})|" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">Previous</span>
-                </a>
-            </li>
+        <li th:each="num: ${#numbers.sequence(res.start , res.end)}"
+            th:class="|page-item ${res.page == num?'active':''}|">
+            <a class="page-link" th:href="|javascript:movePage(${num})|">[[${num}]]</a>
+        </li>
 
-            <li th:each="num: ${#numbers.sequence( res.start , res.end)}"
-                th:class="|page-item ${res.page == num?'active':''}|">
-                <a class="page-link" th:href="|javascript:movePage(${num})|">[[${num}]]</a>
-            </li>
-
-            <li th:if="${res.next}" class="page-item">
-                <a class="page-link" th:href="|javascript:movePage(${res.end+1})|" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </li>
-        </ul>
-    </div>
+        <li th:if="${res.next}" class="page-item">
+            <a class="page-link" th:href="|javascript:movePage(${res.end+1})|" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>
+</div>
 
 <th:block layout:fragment="script">
 
@@ -147,15 +181,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Register</h5>
+                    <h5 class="modal-title">Register Complete!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Done!</p>
+                    <p>작성이 완료되었습니다!</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>

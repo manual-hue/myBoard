@@ -53,22 +53,6 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        function modify(bno) {
-
-            const page = [[${pageRequestDTO.page}]]
-            const size = [[${pageRequestDTO.size}]]
-            const type = [[${pageRequestDTO.type}]]
-            const keyword = [[${pageRequestDTO.keyword}]]
-
-            let searchQuery = ''
-
-            if (type && keyword) {
-                searchQuery += `&type=${type}&keyword=${keyword}`
-            }
-
-            self.location = `/board/modify?bno=${bno}&page=${page}&size=${size}` + searchQuery
-        }
-
         function moveList() {
 
             const page = [[${pageRequestDTO.page}]]
