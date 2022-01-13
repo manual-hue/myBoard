@@ -55,6 +55,7 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDTO> dtoList = result.get().map(
                         board -> modelMapper.map(board, BoardDTO.class))
                 .collect(Collectors.toList());
+
         long totalCount = result.getTotalElements();
 
         return new PageResponseDTO<>(pageRequestDTO, (int) totalCount, dtoList);

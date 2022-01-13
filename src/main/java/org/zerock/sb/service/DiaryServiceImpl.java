@@ -57,6 +57,9 @@ public class DiaryServiceImpl implements DiaryService{
     @Override
     public PageResponseDTO<DiaryDTO> getList(PageRequestDTO pageRequestDTO) {
 
+//        char[] typeArr = pageRequestDTO.getTypes();
+//        String keyword = pageRequestDTO.getKeyword();
+
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),

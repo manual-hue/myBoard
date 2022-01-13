@@ -11,7 +11,6 @@ import org.zerock.sb.entity.Board;
 import org.zerock.sb.entity.QBoard;
 import org.zerock.sb.entity.QReply;
 
-import javax.persistence.Query;
 import java.util.List;
 import java.util.stream.Collectors;
 

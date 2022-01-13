@@ -1,14 +1,15 @@
 package org.zerock.sb.repository.search;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.zerock.sb.entity.Diary;
-import org.zerock.sb.entity.QDiary;
-import org.zerock.sb.entity.QDiaryPicture;
-import org.zerock.sb.entity.QFavorite;
+import org.zerock.sb.entity.*;
+
+import java.util.List;
 
 @Log4j2
 public class DiarySearchImpl extends QuerydslRepositorySupport implements DiarySearch {
@@ -18,7 +19,7 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
     }
 
     @Override
-    public Page<Object[]> getSearchList(Pageable pageable) {
+    public Page<Object[]> getSearchList(char[] typeArr, String keyword, Pageable pageable) {
 
         log.info("getSearchList...............");
 
@@ -26,22 +27,45 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
         QFavorite qFavorite = QFavorite.favorite;
         QDiaryPicture qDiaryPicture = new QDiaryPicture("pic");
 
-        JPQLQuery<Diary> query = from(qDiary);
-        query.leftJoin(qDiary.tags);
-        query.leftJoin(qDiary.pictures, qDiaryPicture);
-        query.leftJoin(qFavorite).on(qFavorite.diary.eq(qDiary));
+        JPQLQuery<Diary> jpqlQuery = from(qDiary);
 
-        query.groupBy(qDiary);
+        jpqlQuery.leftJoin(qDiary.tags);
+        jpqlQuery.leftJoin(qDiary.pictures, qDiaryPicture);
+        jpqlQuery.leftJoin(qFavorite).on(qFavorite.diary.eq(qDiary));
 
-        query.select(qDiary.dno, qDiary.title, qDiaryPicture, qDiary.tags.any(), qFavorite.score.sum());
+        jpqlQuery.groupBy(qDiary);
 
-        getQuerydsl().applyPagination(pageable, query);
+        jpqlQuery.select(qDiary.dno, qDiary.title, qDiaryPicture, qDiary.tags.any(), qFavorite.score.sum());
 
-        log.info("query:" + query);
+        getQuerydsl().applyPagination(pageable, jpqlQuery);
 
-        query.fetch();
+        log.info("query:" + jpqlQuery);
 
+        jpqlQuery.fetch();
+
+        //검색조건이 있다면
+        if(typeArr != null && typeArr.length > 0){
+
+            BooleanBuilder condition = new BooleanBuilder();
+
+            for(char type: typeArr){
+                if(type == 'T'){
+                    condition.or(qDiary.title.contains(keyword));
+                }else if(type =='C'){
+                    condition.or(qDiary.content.contains(keyword));
+                }else if(type == 'W'){
+                    condition.or(qDiary.writer.contains(keyword));
+                }
+            }
+            jpqlQuery.where(condition);
+        }
+
+        jpqlQuery.where(qDiary.dno.gt(0L)); //dno > 0
+
+        JPQLQuery<Diary> pagingQuery =
+                this.getQuerydsl().applyPagination(pageable, jpqlQuery);
 
         return null;
+
     }
 }

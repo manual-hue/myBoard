@@ -133,14 +133,12 @@
 
     <div class="board-list">
         <div th:each="board:${res.dtoList}" class="card diary-list">
-            <div class="card-header">
-                <img th:each="picture:${board.pictures[0]}" th:src="@{/display(fileName=${picture.getLink()})}">
-            </div>
             <div class="card-body">
-                <h1></h1>
-                <p>Dno. [[${board.dno}]]</p>
-                <a th:href="|javascript:movePage(${res.page}, ${board.dno})|">[[${board.title}]]</a>
-                <p>[[${board.writer}]]</p>
+                <img th:each="picture:${board.pictures[0]}" th:src="@{/display(fileName=${picture.getLink()})}">
+                <h6>　</h6>
+                <p style="font-weight: bold;">[[${board.dno}]]</p>
+                <a style="color: #7e7e7e;" th:href="|javascript:movePage(${res.page}, ${board.dno})|">[[${board.title}]]</a>
+                <p style="font-size: smaller;">[[${board.writer}]]</p>
                 <p>[[${#temporals.format(board.regDate, 'yyyy/MM/dd')}]]</p>
                 <ul class="tagDiv card-footer">
                     <li class="list" th:each="tag:${board.tags}">[[|#${tag}]]</li>
