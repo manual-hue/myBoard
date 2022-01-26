@@ -50,11 +50,9 @@ public class DiaryController {
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
 
-        PageResponseDTO<DiaryDTO> responseDTO
+//        PageResponseDTO<DiaryDTO> responseDTO = diaryService.getList(pageRequestDTO);
 
-                = diaryService.getList(pageRequestDTO);
-
-        model.addAttribute("res", responseDTO);
+        model.addAttribute("res", diaryService.getListWithFavorite(pageRequestDTO));
 
     }
 }

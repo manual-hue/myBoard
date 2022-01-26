@@ -88,7 +88,6 @@ public class DiaryRepositoryTests {
 
         log.info(dto);
 
-
     }
 
     @Test
@@ -102,6 +101,20 @@ public class DiaryRepositoryTests {
             log.info(diary);
             log.info(diary.getTags());
             log.info(diary.getPictures());
+            log.info("-----------------------------");
+        });
+
+    }
+
+    @Test
+    public void testSearch() {
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("dno").descending());
+
+        Page<Object[]> result = diaryRepository.findWithFavoriteCount(pageable);
+
+        result.get().forEach(diary -> {
+            log.info(diary);
             log.info("-----------------------------");
         });
 
@@ -151,7 +164,6 @@ public class DiaryRepositoryTests {
 
         //Test code는 항상 commit, 트랜잭션을 걸어주어야만 롤백이 되지 앟는다.
         diaryRepository.save(diary);
-
 
     }
 }

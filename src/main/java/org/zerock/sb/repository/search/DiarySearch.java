@@ -6,5 +6,5 @@ import org.zerock.sb.entity.Diary;
 
 public interface DiarySearch {
 
-    Page<Object[]> getSearchList(char[] typeArr, String keyword, Pageable pageable);
+    Page<Object[]> getListWithFavorite(char[] typeArr, String keyword, Pageable pageable);
 }

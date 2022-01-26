@@ -1,6 +1,7 @@
 package org.zerock.sb.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.zerock.sb.entity.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class DiarySearchImpl extends QuerydslRepositorySupport implements DiarySearch {
@@ -19,7 +21,7 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
     }
 
     @Override
-    public Page<Object[]> getSearchList(char[] typeArr, String keyword, Pageable pageable) {
+    public Page<Object[]> getListWithFavorite(char[] typeArr, String keyword, Pageable pageable) {
 
         log.info("getSearchList...............");
 
@@ -60,12 +62,18 @@ public class DiarySearchImpl extends QuerydslRepositorySupport implements DiaryS
             jpqlQuery.where(condition);
         }
 
-        jpqlQuery.where(qDiary.dno.gt(0L)); //dno > 0
+        // 조회 대상 지정 = 글 번호, 제목, 첨부파일, 해시태그, 좋아요 수
+        JPQLQuery<Tuple> selectQuery = jpqlQuery.select(qDiary.dno, qDiary.title, qDiaryPicture, qDiary.tags.any(), qFavorite.score.sum());
 
-        JPQLQuery<Diary> pagingQuery =
-                this.getQuerydsl().applyPagination(pageable, jpqlQuery);
+        this.getQuerydsl().applyPagination(pageable, selectQuery);
 
-        return null;
+        List<Tuple> tupleList = selectQuery.fetch();
+        long totalCount = selectQuery.fetchCount();
+
+        List<Object[]> arr = tupleList.stream().map(tuple -> tuple.toArray()).
+                collect(Collectors.toList());
+
+        return new PageImpl<>(arr, pageable, totalCount);
 
     }
 }
