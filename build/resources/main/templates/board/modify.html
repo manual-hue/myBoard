@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/layout2">
+<div class="card" layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            Board Modify
+        </div>
+        <div class="card-body">
+          <form th:action="@{/board/modify}" method="post">
+            <div class="input-group mb-3">
+                <span class="input-group-text">Bno</span>
+                <input type="text" name="bno" class="form-control" readonly
+                       th:value="${dto.bno}">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">Title</span>
+                <input type="text" name="title" class="form-control"
+                       th:value="${dto.title}">
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text">Writer</span>
+                <input type="text" name="writer" class="form-control" readonly
+                       th:value="${dto.writer}">
+            </div>
+
+<!--            <div class="input-group mb-3">-->
+<!--                <span class="input-group-text">ModDate</span>-->
+<!--                <input type="text" name="modDate" class="form-control" readonly-->
+<!--                       th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}">-->
+<!--            </div>-->
+
+            <div class="input-group">
+                <span class="input-group-text">Content</span>
+                <textarea id="summernote" class="form-control" aria-label="With textarea" name="content" rows="4" th:utext="(${dto.content})"></textarea>
+            </div>
+
+            <div class="my-4">
+                <div class="my-4">
+                    <div class="float-end">
+                        <button type="submit" class="btn btn-primary">Modify</button>
+                        <button type="button" class="btn btn-secondary" th:onclick="|moveList()|">Back?</button>
+                    </div>
+                </div>
+            </div>
+          </form>
+        </div>
+    </div>
+    <!-- end card-->
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function moveList() {
+
+            const page = [[${pageRequestDTO.page}]]
+            const size = [[${pageRequestDTO.size}]]
+            const type = [[${pageRequestDTO.type}]]
+            const keyword = [[${pageRequestDTO.keyword}]]
+
+            let searchQuery = ''
+
+            if (type && keyword) {
+                searchQuery += `&type=${type}&keyword=${keyword}`
+            }
+
+            self.location = `/board/list?page=${page}&size=${size}` + searchQuery
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</th:block>
